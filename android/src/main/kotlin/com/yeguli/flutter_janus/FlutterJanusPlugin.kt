@@ -251,7 +251,6 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
             result.error("joinRoom", errorMsg, null)
             return
         }
-        Log.e(TAG, "joinRoom, roomId = $roomId, id = $id")
         val context = Bundle.create()
         context.setString("room", roomId)
         context.setString("id", id ?: "")
