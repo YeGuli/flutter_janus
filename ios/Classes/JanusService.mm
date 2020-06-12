@@ -15,6 +15,7 @@ serviceDelegate:(id<JanusServiceDelegate>_Nullable) sDelegate{
     serviceDelegate = sDelegate;
     
     JanusPeerFactoryImpl * factory = [JanusPeerFactoryImpl new];
+    [factory setParam:pDelegate];
     JanusPlatform * platform = [JanusPlatform create:factory];
     janus = [JanusJanus create:conf platform:platform delegate:self];
 }

@@ -63,7 +63,10 @@ class _MeetingPageState extends State<MeetingPage> {
   }
 
   onLocalStream(
-      String id, MediaStream stream, MediaStreamTrack localTrack) async {
+      int id,
+      String publisherId,
+      MediaStream stream,
+      MediaStreamTrack localTrack) async {
     print(
         "[onLocalStream], _trackId = ${localTrack.id}, kind = ${localTrack.kind}, label = ${localTrack.label}, enabled = ${localTrack.enabled}");
     this.localStream = stream;
@@ -72,7 +75,11 @@ class _MeetingPageState extends State<MeetingPage> {
 //    await addLocal(stream, false);
   }
 
-  onRemoteStream(String id, MediaStream stream) async {
+  onRemoteStream(
+      int id,
+      String publisherId,
+      MediaStream stream,
+      ) async {
     print(
         "[onRemoteStream], stream.videoListSize = ${stream.getVideoTracks().length}, stream.audioListSize = ${stream.getAudioTracks().length}, label = ${stream.id}");
     print(

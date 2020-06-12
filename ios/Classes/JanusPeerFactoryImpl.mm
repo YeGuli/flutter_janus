@@ -9,10 +9,14 @@
 
 @implementation JanusPeerFactoryImpl
 
+- (void)setParam:(id<JanusPeerDelegate>_Nullable)pd{
+    peerDelegate = pd;
+}
+
 - (nullable id<JanusPeer>)create:(int64_t)peerId publisher:(nonnull NSString *)publisher owner:(nullable id<JanusProtocol>)owner {
     JanusPeerImpl *peer = [JanusPeerImpl new];
     NSNumber *idNum = [NSNumber numberWithLongLong:peerId];
-    [peer setParam:idNum publisherId:publisher peerDelegate:nil owner:owner];
+    [peer setParam:idNum publisherId:publisher peerDelegate:peerDelegate owner:owner];
     
     return peer;
 }

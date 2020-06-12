@@ -9,7 +9,7 @@
 
 @synthesize messenger = _messenger;
 
-NSString * const TAG = @"flutter_janus_method_channel";
+NSString * const TAG = @"[FlutterJanusPlugin]";
 
 NSString * const METHOD_CHANNEL = @"flutter_janus_method_channel";
 NSString * const EVENT_CHANNEL = @"flutter_janus_event_channel";
@@ -68,19 +68,19 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 }
 
 -(void) invokeMethod:(NSString *)action data:(NSDictionary*)data result:(FlutterResult _Nullable)callback{
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         [_methodChannel invokeMethod:action arguments:data result:callback];
     });
 }
 
 -(void) sendEventSucces:(NSDictionary*)data{
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         self.eventSink(data);
     });
 }
 
 -(void) sendEventError:(NSString *)errorMsg detail:(NSDictionary*)detail{
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         self.eventSink([FlutterError errorWithCode:@"500" message: errorMsg details: detail]);
     });
 }
@@ -120,7 +120,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 
 #pragma mark - HandleMethodCall
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSLog(@"%s:%d obj=: %@", __func__, __LINE__, call.method);
+    NSLog(@"%@%@method = %@", TAG, @"[handleMethodCall]", call.method);
     if ([@"getPlatformVersion" isEqualToString:call.method]) {
         result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
     } else if([METHOD_CONNECT isEqualToString:call.method]){
@@ -175,8 +175,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)initJanus:(FlutterResult)result host:(nullable NSString *)host{
     if ([self isBlankString:host]) {
         NSString * error = @"initJanus(): host is null or blank";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[initJanus]", error);
         result([FlutterError errorWithCode:@"initJanus" message: error details: nil]);
         return;
     }
@@ -194,8 +193,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)unInitJanus:(FlutterResult)result{
     if (self.janusService == nil) {
         NSString * error = @"unInitJanus(): janus not init";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[unInitJanus]", error);
         result([FlutterError errorWithCode:@"unInitJanus" message: error details: nil]);
         return;
     }
@@ -207,8 +205,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)getRoomList:(FlutterResult)result{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"getRoomList(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[getRoomList]", error);
         result([FlutterError errorWithCode:@"getRoomList" message: error details: nil]);
         return;
     }
@@ -220,15 +217,13 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)joinRoom:(FlutterResult)result roomId:(nullable NSString *)roomId userId:(nullable NSString *)userId{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"joinRoom(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[joinRoom]", error);
         result([FlutterError errorWithCode:@"joinRoom" message: error details: nil]);
         return;
     }
     if ([self isBlankString:roomId]) {
         NSString * error = @"joinRoom(): roomId is null or blank";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[joinRoom]", error);
         result([FlutterError errorWithCode:@"joinRoom" message: error details: nil]);
         return;
     }
@@ -243,8 +238,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)leaveRoom:(FlutterResult)result{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"leaveRoom(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[leaveRoom]", error);
         result([FlutterError errorWithCode:@"leaveRoom" message: error details: nil]);
         return;
     }
@@ -256,8 +250,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)publish:(FlutterResult)result{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"publish(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[publish]", error);
         result([FlutterError errorWithCode:@"publish" message: error details: nil]);
         return;
     }
@@ -272,8 +265,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)unPublish:(FlutterResult)result{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"unPublish(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[unPublish]", error);
         result([FlutterError errorWithCode:@"unPublish" message: error details: nil]);
         return;
     }
@@ -285,22 +277,19 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)subscribe:(FlutterResult)result roomId:(nullable NSString *)roomId publisherId:(nullable NSString *)publisherId{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"subscribe(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[subscribe]", error);
         result([FlutterError errorWithCode:@"subscribe" message: error details: nil]);
         return;
     }
     if ([self isBlankString:roomId]) {
         NSString * error = @"subscribe(): roomId is null or blank";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[subscribe]", error);
         result([FlutterError errorWithCode:@"subscribe" message: error details: nil]);
         return;
     }
     if ([self isBlankString:publisherId]) {
         NSString * error = @"subscribe(): publisherId is null or blank";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[subscribe]", error);
         result([FlutterError errorWithCode:@"subscribe" message: error details: nil]);
         return;
     }
@@ -314,15 +303,13 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)unSubscribe:(FlutterResult)result publisherId:(nullable NSString *)publisherId{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"unSubscribe(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[unSubscribe]", error);
         result([FlutterError errorWithCode:@"unSubscribe" message: error details: nil]);
         return;
     }
     if ([self isBlankString:publisherId]) {
         NSString * error = @"unSubscribe(): publisherId is null or blank";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[unSubscribe]", error);
         result([FlutterError errorWithCode:@"unSubscribe" message: error details: nil]);
         return;
     }
@@ -335,15 +322,13 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 - (void)getParticipantsList:(FlutterResult)result roomId:(nullable NSString *)roomId{
     if (self.janusService == nil || [self.janusService getStatus] != 1) {
         NSString * error = @"getParticipantsList(): janus not ready";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[getParticipantsList]", error);
         result([FlutterError errorWithCode:@"getParticipantsList" message: error details: nil]);
         return;
     }
     if ([self isBlankString:roomId]) {
         NSString * error = @"getParticipantsList(): roomId is null or blank";
-        NSLog(@"%s:%d obj=%@", __func__, __LINE__, error);
-        //        OKPrint("\(SwiftFlutterJanusPlugin.TAG): \(error)");
+        NSLog(@"%@%@error = %@", TAG, @"[getParticipantsList]", error);
         result([FlutterError errorWithCode:@"getParticipantsList" message: error details: nil]);
         return;
     }
@@ -372,7 +357,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 #pragma mark - JanusServiceDelegate
 
 - (void)onJanusReady {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onJanusReady");
+    NSLog(@"%@%@", TAG, @"[onJanusReady]");
     [self sendEventSucces:@{
         @"action":METHOD_CONNECT,
         @"event":@"onJanusReady",
@@ -380,7 +365,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 }
 
 - (void)onJanusClose {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onJanusClose");
+    NSLog(@"%@%@", TAG, @"[onJanusClose]");
     [self sendEventSucces:@{
         @"action":METHOD_CONNECT,
         @"event":@"onJanusClose",
@@ -388,7 +373,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 }
 
 - (void)onJanusHangup:(NSString * _Nullable)reason {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onJanusHangup");
+    NSLog(@"%@%@reason = %@", TAG, @"[onJanusHangup]", reason);
     [self sendEventSucces:@{
         @"action":METHOD_CONNECT,
         @"event":@"onJanusHangup",
@@ -397,8 +382,8 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 }
 
 - (void)onJanusError:(nonnull JanusJanusError *)error bundle:(nullable JanusBundle *)payload {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onJanusError");
     NSString* errorType =[payload getString:@"common" fallback:@""];
+    NSLog(@"%@%@errorType = %@, error = %@", TAG, @"[onJanusError]", errorType,[error message]);
     if([errorType isEqualToString:JanusJanusCommandsLIST]){
         [self sendEventError:@"" detail:@{
             @"action":METHOD_GET_ROOM_LIST,
@@ -449,7 +434,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
     JanusJanusData *data = [event data];
     NSString* cmd = [payload getString:@"command" fallback:@""];
     NSString* status = [data getString:@"janus" fallback:@""];
-    NSLog(@"%s:%d onJanusEvent: data=%@, cmd=%@, status=%@,", __func__, __LINE__, data, cmd, status);
+    NSLog(@"%@%@data = %@, cmd = %@, status = %@", TAG, @"[onJanusEvent]", data, cmd, status);
     
     if([status isEqualToString:@"success"] && [cmd isEqualToString:JanusJanusCommandsLIST]){
         NSArray<JanusJanusData*> * list = [[[data getObject:@"plugindata"] getObject:@"data"] getList:@"list"];
@@ -533,18 +518,18 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 
 #pragma mark - JanusPeerDelegate
 - (void)onInitProtocol:(nonnull NSNumber *)peerId publisherId:(nullable NSString *)publisherId owner:(id<JanusProtocol> _Nullable)owner {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onInitProtocol");
+    NSLog(@"%@%@peerId = %@, publisherId = %@", TAG, @"[onInitProtocol]", peerId, publisherId);
     [self.janusProtocolMap setObject:owner forKey:peerId];
 }
 
 - (void)onCreateAnswer:(nonnull NSNumber *)peerId publisherId:(nullable NSString *)publisherId constraints:(nullable JanusConstraints *)constraints bundle:(nullable JanusBundle *)bundle {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onCreateAnswer");
+    NSLog(@"%@%@peerId = %@, publisherId = %@", TAG, @"[onCreateAnswer]", peerId, publisherId);
     [self invokeMethod:EVENT_CREATE_ANSWER data:@{
         @"id": peerId,
         @"publisherId": publisherId,
-        @"constraints": constraints,
-        @"sdpConstraints": constraints.sdp,
-        @"videoConstraints": constraints.video,
+        @"constraints":  @"constraints",
+        @"sdpConstraints": @"constraints.sdp",
+        @"videoConstraints": @"constraints.video",
         @"sendVideo":[NSNumber numberWithBool:constraints.sdp.sendVideo],
         @"sendAudio": [NSNumber numberWithBool:constraints.sdp.sendAudio],
         @"receiveVideo": [NSNumber numberWithBool:constraints.sdp.receiveVideo],
@@ -556,32 +541,33 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
         @"camera": constraints.video.camera,
     } result:^(id  _Nullable result) {
         if([result isKindOfClass:[FlutterError class]]){
-            //        NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onCreateAnswerError");
-        } else if([result isKindOfClass:[FlutterMethodNotImplemented class]]){
-            
-        } else if(result!=nil){
-            //        NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onCreateAnswerSuccess");
-            NSDictionary *args = result;
-            long long pId = [[args objectForKey:@"id"] longLongValue];
-            NSString *sdp = [args objectForKey:@"sdp"];
+            NSLog(@"%@%@error = %@", TAG, @"[onCreateAnswer error]", [result message]);
+        } else if([result isKindOfClass:[NSDictionary class]]){
+            NSLog(@"%@%@", TAG, @"[onCreateAnswer success]");
+            long long pId = [[result objectForKey:@"id"] longLongValue];
+            NSString *sdp = [result objectForKey:@"sdp"];
             
             NSNumber *realId = [NSNumber numberWithLongLong:pId];
             id<JanusProtocol> owner = [self.janusProtocolMap objectForKey:realId];
             if(owner != nil){
                 [owner onAnswer:sdp context:bundle];
             }
+        } else if([result isKindOfClass:[FlutterMethodNotImplemented class]]){
+            NSLog(@"%@%@", TAG, @"[onCreateAnswer error]not implemented");
+        } else{
+            NSLog(@"%@%@", TAG, @"[onCreateAnswer error]result can not parse");
         }
     }];
 }
 
 - (void)onCreateOffer:(nonnull NSNumber *)peerId publisherId:(nullable NSString *)publisherId constraints:(nullable JanusConstraints *)constraints bundle:(nullable JanusBundle *)bundle {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onCreateOffer");
+    NSLog(@"%@%@peerId = %@, publisherId = %@", TAG, @"[onCreateOffer]", peerId, publisherId);
     [self invokeMethod:EVENT_CREATE_OFFER data:@{
         @"id": peerId,
         @"publisherId": publisherId,
-        @"constraints": constraints,
-        @"sdpConstraints": constraints.sdp,
-        @"videoConstraints": constraints.video,
+        @"constraints": @"constraints",
+        @"sdpConstraints": @"constraints.sdp",
+        @"videoConstraints": @"constraints.video",
         @"sendVideo":[NSNumber numberWithBool:constraints.sdp.sendVideo],
         @"sendAudio": [NSNumber numberWithBool:constraints.sdp.sendAudio],
         @"receiveVideo": [NSNumber numberWithBool:constraints.sdp.receiveVideo],
@@ -593,26 +579,27 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
         @"camera": constraints.video.camera,
     } result:^(id  _Nullable result) {
         if([result isKindOfClass:[FlutterError class]]){
-            NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onCreateOfferError");
-        } else if([result isKindOfClass:[FlutterMethodNotImplemented class]]){
-            
-        } else if(result!=nil){
-            NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onCreateOfferSuccess");
-            NSDictionary *args = result;
-            long long pId = [[args objectForKey:@"id"] longLongValue];
-            NSString *sdp = [args objectForKey:@"sdp"];
+            NSLog(@"%@%@error = %@", TAG, @"[onCreateOffer error]", [result message]);
+        } else if([result isKindOfClass:[NSDictionary class]]){
+            NSLog(@"%@%@", TAG, @"[onCreateOffer success]");
+            long long pId = [[result objectForKey:@"id"] longLongValue];
+            NSString *sdp = [result objectForKey:@"sdp"];
             
             NSNumber *realId = [NSNumber numberWithLongLong:pId];
             id<JanusProtocol> owner = [self.janusProtocolMap objectForKey:realId];
             if(owner != nil){
                 [owner onOffer:sdp context:bundle];
             }
+        } else if([result isKindOfClass:[FlutterMethodNotImplemented class]]){
+            NSLog(@"%@%@", TAG, @"[onCreateOffer error]not implemented");
+        } else{
+            NSLog(@"%@%@", TAG, @"[onCreateOffer error]result can not parse");
         }
     }];
 }
 
 - (void)onAddIceCandidate:(nonnull NSNumber *)peerId publisherId:(nullable NSString *)publisherId mid:(nullable NSString *)mid index:(nullable NSNumber *)index sdp:(nullable NSString *)sdp {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onAddIceCandidate");
+    NSLog(@"%@%@peerId = %@, publisherId = %@", TAG, @"[onAddIceCandidate]", peerId, publisherId);
     [self invokeMethod:EVENT_ADD_ICE_CANDIDATE data:@{
         @"id": peerId,
         @"publisherId": publisherId,
@@ -623,7 +610,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 }
 
 - (void)onSetLocalDescription:(nonnull NSNumber *)peerId publisherId:(nullable NSString *)publisherId type:(JanusSdpType)type sdp:(nullable NSString *)sdp {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onSetLocalDescription");
+    NSLog(@"%@%@peerId = %@, publisherId = %@", TAG, @"[onSetLocalDescription]", peerId, publisherId);
     [self invokeMethod:EVENT_SET_LOCAL_DESCRIPTION data:@{
         @"id": peerId,
         @"publisherId": publisherId,
@@ -633,7 +620,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 }
 
 - (void)onSetRemoteDescription:(nonnull NSNumber *)peerId publisherId:(nullable NSString *)publisherId type:(JanusSdpType)type sdp:(nullable NSString *)sdp {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onSetRemoteDescription");
+    NSLog(@"%@%@peerId = %@, publisherId = %@", TAG, @"[onSetRemoteDescription]", peerId, publisherId);
     [self invokeMethod:EVENT_SET_REMOTE_DESCRIPTION data:@{
         @"id": peerId,
         @"publisherId": publisherId,
@@ -643,7 +630,7 @@ NSString * const  EVENT_PEER_CLOSE = @"onPeerClose";
 }
 
 - (void)onPeerClose:(nonnull NSNumber *)peerId publisherId:(nullable NSString *)publisherId {
-    NSLog(@"%s:%d obj=%@", __func__, __LINE__, @"onPeerClose");
+    NSLog(@"%@%@peerId = %@, publisherId = %@", TAG, @"[onPeerClose]", peerId, publisherId);
     [self invokeMethod:EVENT_SET_LOCAL_DESCRIPTION data:@{
         @"id": peerId,
         @"publisherId": publisherId,

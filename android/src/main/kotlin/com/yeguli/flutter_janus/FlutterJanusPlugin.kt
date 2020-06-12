@@ -35,7 +35,7 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     private var eventSinkMap: HashMap<Any?, EventChannel.EventSink?> = HashMap()
 
     companion object {
-        const val TAG = "FlutterJanusPlugin"
+        const val TAG = "[FlutterJanusPlugin]"
         const val METHOD_CHANNEL = "flutter_janus_method_channel"
         const val EVENT_CHANNEL = "flutter_janus_event_channel"
 
@@ -124,7 +124,6 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     }
 
     private fun sendEventSuccess(data: Any?) {
-        Log.d(TAG, "sendEventSuccess, data = $data")
         eventHandler?.post {
             eventSink?.success(data)
         }
@@ -549,7 +548,7 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     }
 
     override fun onCreateOffer(id: Long, publisherId: String?, constraints: Constraints?, context: Bundle?) {
-        Log.d(TAG, "onCreateOffer, constraints = $constraints")
+        Log.d(TAG, "onCreateOffer, id = $id, publisherId = $publisherId")
 
         eventHandler?.post {
             methodChannel.invokeMethod(EVENT_CREATE_OFFER, HashMap<String, Any>().apply {
@@ -572,11 +571,11 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
                 }
 
                 override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
-                    Log.d(TAG, "onCreateOfferError, errorMessage = $errorMessage")
+                    Log.d(TAG, "onCreateOfferError, id = $id, publisherId = $publisherId, errorMessage = $errorMessage")
                 }
 
                 override fun success(result: Any?) {
-                    Log.d(TAG, "onCreateOfferSuccess, result = $result")
+                    Log.d(TAG, "onCreateOfferSuccess, id = $id, publisherId = $publisherId")
                     val pId = result.argument<Long>("id") ?: 0
                     val sdp = result.argument<String>("sdp") ?: ""
                     janusProtocolMap[pId]?.onOffer(sdp, context)
@@ -587,7 +586,7 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     }
 
     override fun onCreateAnswer(id: Long, publisherId: String?, constraints: Constraints?, context: Bundle?) {
-        Log.d(TAG, "onCreateAnswer, constraints = $constraints")
+        Log.d(TAG, "onCreateAnswer, id = $id, publisherId = $publisherId")
         eventHandler?.post {
             methodChannel.invokeMethod(EVENT_CREATE_ANSWER, HashMap<String, Any>().apply {
                 this["id"] = id
@@ -609,11 +608,11 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
                 }
 
                 override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
-                    Log.d(TAG, "onCreateAnswerError, errorMessage = $errorMessage")
+                    Log.d(TAG, "onCreateAnswerError, id = $id, publisherId = $publisherId,  errorMessage = $errorMessage")
                 }
 
                 override fun success(result: Any?) {
-                    Log.d(TAG, "onCreateAnswerSuccess, result = $result")
+                    Log.d(TAG, "onCreateAnswerSuccess, id = $id, publisherId = $publisherId")
                     val pId = result.argument<Long>("id") ?: 0
                     val sdp = result.argument<String>("sdp") ?: ""
                     janusProtocolMap[pId]?.onAnswer(sdp, context)
@@ -623,7 +622,7 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     }
 
     override fun onAddIceCandidate(id: Long, publisherId: String?, mid: String?, index: Int, sdp: String?) {
-        Log.d(TAG, "onAddIceCandidate, mid = $mid , index = $index , sdp = $sdp")
+        Log.d(TAG, "onAddIceCandidate, id = $id, publisherId = $publisherId")
         eventHandler?.post {
             methodChannel.invokeMethod(EVENT_ADD_ICE_CANDIDATE, HashMap<String, Any>().apply {
                 this["id"] = id
@@ -636,7 +635,7 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     }
 
     override fun onSetLocalDescription(id: Long, publisherId: String?, type: SdpType?, sdp: String?) {
-        Log.d(TAG, "setLocalDescription, type = $type , sdp = $sdp")
+        Log.d(TAG, "setLocalDescription, id = $id, publisherId = $publisherId")
         eventHandler?.post {
             methodChannel.invokeMethod(EVENT_SET_LOCAL_DESCRIPTION, HashMap<String, Any>().apply {
                 this["id"] = id
@@ -648,7 +647,7 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     }
 
     override fun onSetRemoteDescription(id: Long, publisherId: String?, type: SdpType?, sdp: String?) {
-        Log.d(TAG, "setRemoteDescription, type = $type , sdp = $sdp")
+        Log.d(TAG, "setRemoteDescription, id = $id, publisherId = $publisherId")
         eventHandler?.post {
             methodChannel.invokeMethod(EVENT_SET_REMOTE_DESCRIPTION, HashMap<String, Any>().apply {
                 this["id"] = id
@@ -660,7 +659,7 @@ class FlutterJanusPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Even
     }
 
     override fun onPeerClose(id: Long, publisherId: String?) {
-        Log.d(TAG, "onPeerClose")
+        Log.d(TAG, "onPeerClose, id = $id, publisherId = $publisherId")
         eventHandler?.post {
             methodChannel.invokeMethod(EVENT_PEER_CLOSE, HashMap<String, Any>().apply {
                 this["id"] = id
