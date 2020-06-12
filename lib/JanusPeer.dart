@@ -40,10 +40,10 @@ class JanusPeer {
     this.id = id;
     this.publisherId = publisherId;
     peer = await createPeerConnection(configurationPC, constraints);
-    print("$TAG[initPeer]protolId = $id, publisherId = $publisherId");
     peer.onAddStream = onRemoteStream;
     peer.onIceCandidate = onIceCandidate;
     peer.onIceConnectionState = onIceConnectionState;
+    print('$TAG[initPeer][complete]id = $id, publisherId = $publisherId');
   }
 
   void onRemoteStream(MediaStream stream) {
@@ -52,7 +52,7 @@ class JanusPeer {
 
   void onIceCandidate(RTCIceCandidate candidate) {
     print(
-        "$TAG[onIceCandidate]protolId = $id, candidate= ${candidate.toMap()}");
+        "$TAG[onIceCandidate]id = $id, publisherId = $publisherId, candidate= ${candidate.toMap()}");
     Janus.onPeerIceCandidate(
       id,
       candidate.sdpMid,
@@ -89,52 +89,52 @@ class JanusPeer {
         statusStr = "closed";
         break;
     }
-    print("$TAG[onIceConnectionState]protolId = $id,  state= $statusStr");
+    print("$TAG[onIceConnectionState]id = $id, publisherId = $publisherId, state= $statusStr");
     Janus.onIceGatheringChange(id, statusStr);
   }
 
   Future<String> onCreateOffer(Map<String, Object> data) async {
-    print("$TAG[onCreateOffer]protolId = $id,  data = $data");
+    print("$TAG[onCreateOffer]id = $id, publisherId = $publisherId, data = $data");
     MediaStream localStream = await getUsersMedia(data);
     peer.addStream(localStream);
     onPeerLocalStream(
         id, publisherId, localStream, localStream.getVideoTracks()[0]);
     RTCSessionDescription offer = await peer.createOffer(createSdp(data));
     print(
-        "$TAG[onCreateOffer]protolId = $id,  RTCSessionDescription = ${offer
+        "$TAG[onCreateOffer][complete]id = $id, publisherId = $publisherId, RTCSessionDescription = ${offer
             .toMap()}");
     return offer.sdp;
   }
 
   Future<String> onCreateAnswer(Map<String, Object> data) async {
-    print("$TAG[onCreateAnswer]protolId = $id,  data = $data");
+    print("$TAG[onCreateAnswer]id = $id, publisherId = $publisherId, data = $data");
     RTCSessionDescription answer = await peer.createAnswer(createSdp(data));
     print(
-        "$TAG[onCreateAnswer]protolId = $id,  RTCSessionDescription = ${answer
+        "$TAG[onCreateAnswer][complete]id = $id, publisherId = $publisherId, RTCSessionDescription = ${answer
             .toMap()}");
     return answer.sdp;
   }
 
   Future onAddIceCandidate(Map<String, Object> data) async {
-    print("$TAG[onAddIceCandidate]protolId = $id,  data = $data");
+    print("$TAG[onAddIceCandidate]id = $id, publisherId = $publisherId, data = $data");
     await peer
         .addCandidate(RTCIceCandidate(data["sdp"], data["mid"], data["index"]));
   }
 
   Future onSetLocalDescription(Map<String, Object> data) async {
-    print("$TAG[onSetLocalDescription]protolId = $id,  data = $data");
+    print("$TAG[onSetLocalDescription]id = $id, publisherId = $publisherId, isOffer = ${data["isOffer"]}, data = $data");
     await peer.setLocalDescription(RTCSessionDescription(
         data["sdp"], data["isOffer"] ? "offer" : "answer"));
   }
 
   Future onSetRemoteDescription(Map<String, Object> data) async {
-    print("$TAG[onSetRemoteDescription]protolId = $id,  data = $data");
+    print("$TAG[onSetRemoteDescription]id = $id, publisherId = $publisherId, isOffer = ${data["isOffer"]}, data = $data");
     await peer.setRemoteDescription(RTCSessionDescription(
         data["sdp"], data["isOffer"] ? "offer" : "answer"));
   }
 
   Future onPeerClose(Map<String, Object> data) async {
-    print("$TAG[onPeerClose]protolId = $id,  data = $data");
+    print("$TAG[onPeerClose]id = $id, publisherId = $publisherId, data = $data");
     await peer.dispose();
     onPeerClosed(id);
   }

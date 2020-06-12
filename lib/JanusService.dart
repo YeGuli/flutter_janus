@@ -195,7 +195,7 @@ class JanusService {
 
   Future<dynamic> platformCallHandler(MethodCall call) async {
     Map<String, Object> data = Map.castFrom(call.arguments);
-    print('$TAG[platformCallHandler]method : ${call.method}, data : $data');
+    print('$TAG[platformCallHandler]method : ${call.method}');
 
     int id = data["id"];
     switch (call.method) {
@@ -236,6 +236,7 @@ class JanusService {
   }
 
   Future addPeer(int id, String publisherId) async {
+    print('$TAG[addPeer]id = $id, publisherId = $publisherId');
     JanusPeer peer = JanusPeer();
     await peer.initPeer(id, publisherId);
     peer.onPeerLocalStream = onPeerLocalStream;
@@ -247,7 +248,7 @@ class JanusService {
   Future waitPeerAdded(int id) async {
     int waitCount = 0;
     while (peerMap[id] == null) {
-      print('$TAG[platformCallHandler]method : onCreateAnswer, wait$waitCount');
+      print('$TAG[waitPeerAdded]wait = $waitCount');
       waitCount++;
       await Future.delayed(Duration(milliseconds: 200));
     }
@@ -255,6 +256,7 @@ class JanusService {
   }
 
   Future removePeer(int id) async {
+    print('$TAG[removePeer]id = $id');
     peerMap.remove(peerMap[id]);
   }
 }
